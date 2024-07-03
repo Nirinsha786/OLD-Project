@@ -1,62 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:image2pdf_easyconvert/main_page.dart';
 
-void main() => runApp(const MyApp());
+void main() {
+  runApp(const Image2PDFEasyConvert());
+}
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class Image2PDFEasyConvert extends StatefulWidget {
+  const Image2PDFEasyConvert({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+  State<Image2PDFEasyConvert> createState() => _Image2PDFEasyConvertState();
+}
+
+class _Image2PDFEasyConvertState extends State<Image2PDFEasyConvert> {
+  bool _isDarkTheme = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _requestPermission();
   }
-}
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
+  Future<void> _requestPermission() async {
+    final PermissionStatus status =
+        await Permission.manageExternalStorage.request();
+    if (status != PermissionStatus.granted) {
+      // Handle permission denied
+      // You can show a dialog or message to the user explaining why the permission is necessary
+      // and provide an option for the user to grant the permission.
+    }
+  }
 
-  @override
-  MyHomePageState createState() => MyHomePageState(); // Removed underscore
-}
-
-class MyHomePageState extends State<MyHomePage> {
-  // Removed underscore
-  int _counter = 0;
-
-  void _incrementCounter() {
+  void _toggleTheme() {
     setState(() {
-      _counter++;
+      _isDarkTheme = !_isDarkTheme;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: _isDarkTheme ? ThemeData.dark() : ThemeData.light(),
+      home: MainPage(
+        onToggleTheme: _toggleTheme,
+        isDarkTheme: _isDarkTheme,
       ),
     );
   }
